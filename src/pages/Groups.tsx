@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, Plus, Trophy, Users } from "lucide-react";
+import { ArrowLeft, Plus, Trophy, Users, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { GroupRanking } from "@/components/GroupRanking";
 
 export default function Groups() {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ export default function Groups() {
   const [metric, setMetric] = useState("total_hours");
   const [endDate, setEndDate] = useState("");
   const [open, setOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<any>(null);
+  const [groupMembers, setGroupMembers] = useState<any[]>([]);
+  const [rankingOpen, setRankingOpen] = useState(false);
 
   useEffect(() => {
     loadGroups();
@@ -39,6 +43,47 @@ export default function Groups() {
       .eq("user_id", user.id);
 
     setGroups(data?.map((item) => item.groups) || []);
+  };
+
+  const loadGroupMembers = async (groupId: string, groupMetric: string) => {
+    const { data: members } = await supabase
+      .from("group_members")
+      .select(
+        `
+        user_id,
+        profiles (
+          name,
+          total_hours,
+          streak
+        )
+      `
+      )
+      .eq("group_id", groupId);
+
+    if (!members) return;
+
+    const ranking = members
+      .map((member: any) => ({
+        user_id: member.user_id,
+        name: member.profiles?.name || "Usuário",
+        value:
+          groupMetric === "total_hours"
+            ? Number(member.profiles?.total_hours || 0)
+            : Number(member.profiles?.streak || 0),
+      }))
+      .sort((a, b) => b.value - a.value)
+      .map((member, index) => ({
+        ...member,
+        position: index + 1,
+      }));
+
+    setGroupMembers(ranking);
+  };
+
+  const openGroupRanking = async (group: any) => {
+    setSelectedGroup(group);
+    await loadGroupMembers(group.id, group.metric);
+    setRankingOpen(true);
   };
 
   const createGroup = async () => {
@@ -149,26 +194,64 @@ export default function Groups() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
             {groups.map((group) => (
-              <Card key={group.id} className="p-6 shadow-card hover:shadow-soft transition-shadow cursor-pointer">
+              <Card
+                key={group.id}
+                className="p-6 shadow-card hover:shadow-soft transition-all cursor-pointer hover-scale"
+                onClick={() => openGroupRanking(group)}
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-semibold">{group.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(group.end_date).toLocaleDateString("pt-BR")}
+                      Termina em {new Date(group.end_date).toLocaleDateString("pt-BR")}
                     </p>
                   </div>
                   <div className="p-2 rounded-lg gradient-accent">
                     <Trophy className="h-5 w-5 text-white" />
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  Métrica: {group.metric === "total_hours" ? "Horas Totais" : group.metric === "streak" ? "Streak" : "Custom"}
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                  <TrendingUp className="h-4 w-4" />
+                  Métrica:{" "}
+                  {group.metric === "total_hours"
+                    ? "Horas Totais"
+                    : group.metric === "streak"
+                    ? "Streak"
+                    : "Custom"}
                 </div>
+                <Button variant="outline" className="w-full" size="sm">
+                  <Users className="mr-2 h-4 w-4" />
+                  Ver Ranking
+                </Button>
               </Card>
             ))}
           </div>
         )}
+
+        <Dialog open={rankingOpen} onOpenChange={setRankingOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-2xl">
+                <Trophy className="h-6 w-6 text-primary" />
+                {selectedGroup?.name}
+              </DialogTitle>
+              <p className="text-muted-foreground">
+                Competição:{" "}
+                {selectedGroup?.metric === "total_hours"
+                  ? "Horas Totais"
+                  : selectedGroup?.metric === "streak"
+                  ? "Maior Streak"
+                  : "Personalizado"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Termina em {selectedGroup?.end_date && new Date(selectedGroup.end_date).toLocaleDateString("pt-BR")}
+              </p>
+            </DialogHeader>
+            <div className="mt-6">
+              <GroupRanking members={groupMembers} metric={selectedGroup?.metric || "total_hours"} />
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
