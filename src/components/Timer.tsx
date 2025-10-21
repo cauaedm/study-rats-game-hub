@@ -24,7 +24,7 @@ export const Timer = () => {
         if (isCountdown) {
           setRemainingSeconds((r) => {
             if (r <= 1) {
-              handleStop();
+              setIsRunning(false);
               toast.success("Tempo de foco concluído! 🎉");
               return 0;
             }
@@ -39,6 +39,13 @@ export const Timer = () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isRunning, isCountdown]);
+
+  // Auto-save session when countdown completes
+  useEffect(() => {
+    if (!isRunning && sessionId && remainingSeconds === 0 && seconds > 0 && isCountdown) {
+      handleStop();
+    }
+  }, [isRunning, remainingSeconds]);
 
   const formatTime = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);
