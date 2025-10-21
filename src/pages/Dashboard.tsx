@@ -5,7 +5,7 @@ import { Timer } from "@/components/Timer";
 import { StatsCard } from "@/components/StatsCard";
 import { WeeklyChart } from "@/components/WeeklyChart";
 import { Button } from "@/components/ui/button";
-import { Clock, Flame, LogOut, Users, Settings } from "lucide-react";
+import { Clock, Flame, LogOut, Users, Settings, Home } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -81,6 +81,9 @@ export default function Dashboard() {
             <p className="text-muted-foreground">Continue estudando e alcance seus objetivos</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate("/")}>
+              <Home className="h-4 w-4" />
+            </Button>
             <Button variant="outline" onClick={() => navigate("/settings")}>
               <Settings className="h-4 w-4" />
             </Button>

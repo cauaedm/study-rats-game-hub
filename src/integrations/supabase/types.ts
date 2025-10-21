@@ -59,24 +59,30 @@ export type Database = {
           creator_id: string
           end_date: string
           id: string
+          is_public: boolean | null
           metric: string
           name: string
+          password: string | null
         }
         Insert: {
           created_at?: string | null
           creator_id: string
           end_date: string
           id?: string
+          is_public?: boolean | null
           metric: string
           name: string
+          password?: string | null
         }
         Update: {
           created_at?: string | null
           creator_id?: string
           end_date?: string
           id?: string
+          is_public?: boolean | null
           metric?: string
           name?: string
+          password?: string | null
         }
         Relationships: [
           {
