@@ -132,6 +132,10 @@ export const Timer = () => {
     toast.success(`Sessão finalizada! ${durationMinutes} minutos estudados`);
     setSeconds(0);
     setSessionId(null);
+    setRemainingSeconds(0);
+    
+    // Trigger page reload to update stats
+    window.location.reload();
   };
 
   const progressPercentage = isCountdown && focusTime > 0
