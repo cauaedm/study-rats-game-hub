@@ -3,19 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Timer } from "@/components/Timer";
 import { StatsCard } from "@/components/StatsCard";
-import { WeeklyChart } from "@/components/WeeklyChart";
+import { MonthlyCalendar } from "@/components/MonthlyCalendar";
 import { Button } from "@/components/ui/button";
-import { Clock, Flame, LogOut, Users, Settings, Home } from "lucide-react";
+import { Clock, Flame, LogOut, Users, User, Home } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
-  const [weeklyData, setWeeklyData] = useState<Array<{ day: string; hours: number }>>([]);
 
   useEffect(() => {
     loadProfile();
-    loadWeeklyData();
   }, []);
 
   const loadProfile = async () => {
@@ -31,37 +29,6 @@ export default function Dashboard() {
     setProfile(data);
   };
 
-  const loadWeeklyData = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    const now = new Date();
-    const weekData = [];
-
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(now);
-      date.setDate(date.getDate() - i);
-      const dayName = days[date.getDay()];
-
-      const startOfDay = new Date(date.setHours(0, 0, 0, 0)).toISOString();
-      const endOfDay = new Date(date.setHours(23, 59, 59, 999)).toISOString();
-
-      const { data } = await supabase
-        .from("study_sessions")
-        .select("duration_minutes")
-        .eq("user_id", user.id)
-        .gte("start_time", startOfDay)
-        .lte("start_time", endOfDay);
-
-      const totalMinutes = data?.reduce((sum, session) => sum + (session.duration_minutes || 0), 0) || 0;
-      weekData.push({ day: dayName, hours: Number((totalMinutes / 60).toFixed(1)) });
-    }
-
-    setWeeklyData(weekData);
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -84,8 +51,8 @@ export default function Dashboard() {
             <Button variant="outline" onClick={() => navigate("/")}>
               <Home className="h-4 w-4" />
             </Button>
-            <Button variant="outline" onClick={() => navigate("/settings")}>
-              <Settings className="h-4 w-4" />
+            <Button variant="outline" onClick={() => navigate("/profile")}>
+              <User className="h-4 w-4" />
             </Button>
             <Button variant="outline" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
@@ -119,9 +86,9 @@ export default function Dashboard() {
         {/* Timer */}
         <Timer />
 
-        {/* Weekly Chart */}
+        {/* Monthly Calendar */}
         <div className="animate-fade-in">
-          <WeeklyChart data={weeklyData} />
+          <MonthlyCalendar userId={profile.id} />
         </div>
       </div>
     </div>

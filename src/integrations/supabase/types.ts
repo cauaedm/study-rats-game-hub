@@ -97,30 +97,39 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string | null
+          daily_goal_hours: number | null
           id: string
           name: string
           streak: number | null
           total_hours: number | null
           updated_at: string | null
+          weekly_goal_hours: number | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
+          daily_goal_hours?: number | null
           id: string
           name: string
           streak?: number | null
           total_hours?: number | null
           updated_at?: string | null
+          weekly_goal_hours?: number | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
+          daily_goal_hours?: number | null
           id?: string
           name?: string
           streak?: number | null
           total_hours?: number | null
           updated_at?: string | null
+          weekly_goal_hours?: number | null
         }
         Relationships: []
       }
