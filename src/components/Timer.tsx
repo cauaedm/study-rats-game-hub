@@ -114,7 +114,7 @@ export const Timer = () => {
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("total_hours")
+        .select("total_hours, streak")
         .eq("id", user.id)
         .single();
 
@@ -123,6 +123,7 @@ export const Timer = () => {
           .from("profiles")
           .update({
             total_hours: (profile.total_hours || 0) + durationMinutes / 60,
+            streak: (profile.streak || 0) + 1,
           })
           .eq("id", user.id);
       }
