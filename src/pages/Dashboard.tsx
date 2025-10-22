@@ -7,6 +7,7 @@ import { MonthlyCalendar } from "@/components/MonthlyCalendar";
 import { Button } from "@/components/ui/button";
 import { Clock, Flame, LogOut, Users, User, Home } from "lucide-react";
 import { toast } from "sonner";
+import logo from "@/assets/logo.png";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -43,9 +44,12 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="flex justify-between items-center animate-fade-in">
-          <div>
-            <h1 className="text-3xl font-bold">Olá, {profile.name}!</h1>
-            <p className="text-muted-foreground">Continue estudando e alcance seus objetivos</p>
+          <div className="flex items-center gap-4">
+            <img src={logo} alt="Study Rats" className="w-12 h-12" />
+            <div>
+              <h1 className="text-3xl font-bold">Olá, {profile.name}!</h1>
+              <p className="text-muted-foreground">Continue estudando e alcance seus objetivos</p>
+            </div>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => navigate("/")}>

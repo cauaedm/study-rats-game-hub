@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Brain, Clock, Trophy, Users, Zap } from "lucide-react";
+import { Clock, Trophy, Users, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import logo from "@/assets/logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -20,9 +21,11 @@ const Index = () => {
       {/* Hero Section */}
       <section className="gradient-primary min-h-screen flex items-center justify-center p-4">
         <div className="max-w-5xl mx-auto text-center text-white animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm mb-8">
-            <Brain className="h-10 w-10" />
-          </div>
+          <img 
+            src={logo} 
+            alt="Study Rats Logo" 
+            className="w-48 h-48 mx-auto mb-8 animate-scale-in"
+          />
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
             StudyRats
           </h1>
