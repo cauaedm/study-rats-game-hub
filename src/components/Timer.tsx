@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Play, Pause, Square, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { StudyPhotoDialog } from "./StudyPhotoDialog";
 
 export const Timer = () => {
   const [seconds, setSeconds] = useState(0);
@@ -16,6 +17,8 @@ export const Timer = () => {
   const [isCountdown, setIsCountdown] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const intervalRef = useRef<number | null>(null);
+  const [showPhotoDialog, setShowPhotoDialog] = useState(false);
+  const [completedDuration, setCompletedDuration] = useState(0);
 
   useEffect(() => {
     if (isRunning) {
@@ -107,14 +110,21 @@ export const Timer = () => {
       return;
     }
 
-    // Update user total hours
+    // Save duration and show photo dialog
+    setCompletedDuration(durationMinutes);
+    setShowPhotoDialog(true);
+  };
+
+  const handlePhotoComplete = async () => {
+    // Update user stats after photo is uploaded
     const {
       data: { user },
     } = await supabase.auth.getUser();
+    
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("total_hours, streak")
+        .select("total_hours")
         .eq("id", user.id)
         .single();
 
@@ -122,20 +132,20 @@ export const Timer = () => {
         await supabase
           .from("profiles")
           .update({
-            total_hours: (profile.total_hours || 0) + durationMinutes / 60,
-            streak: (profile.streak || 0) + 1,
+            total_hours: (profile.total_hours || 0) + completedDuration / 60,
           })
           .eq("id", user.id);
       }
     }
 
-    toast.success(`Sessão finalizada! ${durationMinutes} minutos estudados`);
+    // Reset timer
     setSeconds(0);
     setSessionId(null);
     setRemainingSeconds(0);
+    setCompletedDuration(0);
     
-    // Trigger page reload to update stats
-    window.location.reload();
+    // Redirect to feed
+    window.location.href = "/feed";
   };
 
   const progressPercentage = isCountdown && focusTime > 0
@@ -143,7 +153,8 @@ export const Timer = () => {
     : 0;
 
   return (
-    <Card className="p-8 shadow-card animate-scale-in">
+    <>
+      <Card className="p-8 shadow-card animate-scale-in">
       <div className="space-y-6">
         {/* Configuração de tempo de foco */}
         {!isRunning && seconds === 0 && (
@@ -251,5 +262,16 @@ export const Timer = () => {
         </div>
       </div>
     </Card>
+
+    {sessionId && (
+      <StudyPhotoDialog
+        open={showPhotoDialog}
+        onOpenChange={setShowPhotoDialog}
+        sessionId={sessionId}
+        durationMinutes={completedDuration}
+        onComplete={handlePhotoComplete}
+      />
+    )}
+    </>
   );
 };

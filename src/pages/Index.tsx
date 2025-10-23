@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Clock, Trophy, Users, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/logo.png";
+import logoTransparent from "@/assets/logo-transparent.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const Index = () => {
       <section className="gradient-primary min-h-screen flex items-center justify-center p-4">
         <div className="max-w-5xl mx-auto text-center text-white animate-fade-in">
           <img 
-            src={logo} 
+            src={logoTransparent} 
             alt="Study Rats Logo" 
             className="w-48 h-48 mx-auto mb-8 animate-scale-in"
           />

@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Plus, Trophy, Users, TrendingUp, Home, Lock, Search } from "lucide-react";
+import { Plus, Trophy, Users, TrendingUp, Lock, Search } from "lucide-react";
 import { toast } from "sonner";
 import { GroupRanking } from "@/components/GroupRanking";
+import { MobileNav } from "@/components/MobileNav";
 
 export default function Groups() {
   const navigate = useNavigate();
@@ -196,21 +197,15 @@ export default function Groups() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <header className="flex justify-between items-center animate-fade-in">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate("/")}>
-              <Home className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+    <>
+      <MobileNav />
+      <div className="min-h-screen pt-14 pb-20 px-4">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <header className="flex justify-between items-center animate-fade-in">
             <div>
-              <h1 className="text-3xl font-bold">Meus Grupos</h1>
-              <p className="text-muted-foreground">Compete com amigos e alcance novos objetivos</p>
+              <h1 className="text-2xl font-bold">Meus Grupos</h1>
+              <p className="text-sm text-muted-foreground">Compete com amigos</p>
             </div>
-          </div>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -484,5 +479,6 @@ export default function Groups() {
         </Dialog>
       </div>
     </div>
+    </>
   );
 }

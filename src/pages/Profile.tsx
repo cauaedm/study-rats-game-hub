@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LineChart } from "@/components/LineChart";
-import { ArrowLeft, Camera, Clock, Target, TrendingUp } from "lucide-react";
+import { Camera, Clock, Target, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { MobileNav } from "@/components/MobileNav";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -115,21 +116,17 @@ export default function Profile() {
   const weeklyProgress = Math.min((weeklyHoursCompleted / weeklyGoal) * 100, 100);
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <header className="flex items-center gap-4 animate-fade-in">
-          <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Meu Perfil</h1>
-            <p className="text-muted-foreground">Gerencie suas informações e metas</p>
-          </div>
-        </header>
+    <>
+      <MobileNav />
+      <div className="min-h-screen pt-14 pb-20 px-4">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <header className="animate-fade-in">
+            <h1 className="text-2xl font-bold">Meu Perfil</h1>
+            <p className="text-sm text-muted-foreground">Gerencie suas informações e metas</p>
+          </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Info */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="grid grid-cols-1 gap-6">
+            {/* Profile Info */}
             <Card className="p-6 shadow-card animate-scale-in">
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
@@ -177,29 +174,7 @@ export default function Profile() {
               </div>
             </Card>
 
-            {/* Stats */}
-            <Card className="p-6 shadow-card space-y-4">
-              <h3 className="font-semibold flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Estatísticas
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Total de Horas</span>
-                  <span className="font-bold text-lg">{profile.total_hours?.toFixed(1) || "0.0"}h</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Streak</span>
-                  <span className="font-bold text-lg gradient-accent bg-clip-text text-transparent">
-                    {profile.streak || 0} dias
-                  </span>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Goals & Charts */}
-          <div className="lg:col-span-2 space-y-6">
+            {/* Goals & Charts */}
             <Card className="p-6 shadow-card animate-scale-in">
               <h3 className="font-semibold flex items-center gap-2 mb-4">
                 <Target className="h-5 w-5 text-accent" />
@@ -254,6 +229,26 @@ export default function Profile() {
               <LineChart data={weeklyData} title="Horas de Estudo (Últimos 7 dias)" />
             </div>
 
+            {/* Stats */}
+            <Card className="p-6 shadow-card space-y-4">
+              <h3 className="font-semibold flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Estatísticas
+              </h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Total de Horas</span>
+                  <span className="font-bold text-lg">{profile.total_hours?.toFixed(1) || "0.0"}h</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Streak</span>
+                  <span className="font-bold text-lg gradient-accent bg-clip-text text-transparent">
+                    {profile.streak || 0}
+                  </span>
+                </div>
+              </div>
+            </Card>
+
             {/* Save Button */}
             <Button
               onClick={handleSave}
@@ -265,6 +260,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
