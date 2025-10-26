@@ -14,7 +14,7 @@ export const StatsCard = ({ title, value, icon: Icon, gradient }: StatsCardProps
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground mb-1">{title}</p>
-          <p className={`text-3xl font-bold ${gradient ? 'gradient-accent bg-clip-text text-transparent' : ''}`}>
+          <p className={`text-3xl font-bold ${gradient ? 'text-white' : ''}`}>
             {value}
           </p>
         </div>
