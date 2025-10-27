@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Camera, Upload } from "lucide-react";
+import { Camera as CameraIcon, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Camera } from '@capacitor/camera';
+import { CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 
 interface StudyPhotoDialogProps {
   open: boolean;
@@ -32,6 +35,38 @@ export const StudyPhotoDialog = ({ open, onOpenChange, sessionId, durationMinute
         setPhotoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleNativeCamera = async () => {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+      });
+
+      if (image.dataUrl) {
+        setPhotoPreview(image.dataUrl);
+        // Convert dataUrl to File object
+        const response = await fetch(image.dataUrl);
+        const blob = await response.blob();
+        const file = new File([blob], "study-photo.jpg", { type: "image/jpeg" });
+        setPhoto(file);
+      }
+    } catch (error) {
+      console.error("Error taking photo:", error);
+      toast.error("Erro ao tirar foto");
+    }
+  };
+
+  const handlePhotoAction = () => {
+    if (Capacitor.isNativePlatform()) {
+      handleNativeCamera();
+    } else {
+      // Trigger file input for web
+      document.getElementById('photo-input')?.click();
     }
   };
 
@@ -116,22 +151,32 @@ export const StudyPhotoDialog = ({ open, onOpenChange, sessionId, durationMinute
                 </Button>
               </div>
             ) : (
-              <label htmlFor="photo" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <Camera className="w-10 h-10 mb-3 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold">Clique para adicionar</span> ou tire uma foto
-                  </p>
+              <div>
+                <div 
+                  onClick={handlePhotoAction} 
+                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <CameraIcon className="w-10 h-10 mb-3 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-semibold">
+                        {Capacitor.isNativePlatform() ? 'Toque para tirar foto' : 'Clique para adicionar'}
+                      </span>
+                      {!Capacitor.isNativePlatform() && ' ou tire uma foto'}
+                    </p>
+                  </div>
                 </div>
-                <input
-                  id="photo"
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={handlePhotoChange}
-                />
-              </label>
+                {!Capacitor.isNativePlatform() && (
+                  <input
+                    id="photo-input"
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={handlePhotoChange}
+                  />
+                )}
+              </div>
             )}
           </div>
 
