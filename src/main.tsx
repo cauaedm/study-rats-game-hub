@@ -1,9 +1,15 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { initializeCapacitor } from "./utils/capacitor";
 
-// Initialize Capacitor plugins
-initializeCapacitor();
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Initialize Capacitor after React is ready
+import('./utils/capacitor').then(({ initializeCapacitor }) => {
+  initializeCapacitor().catch(console.error);
+});
